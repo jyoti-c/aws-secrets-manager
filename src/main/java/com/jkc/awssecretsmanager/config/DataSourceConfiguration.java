@@ -86,7 +86,7 @@ public class DataSourceConfiguration {
         String username = secretsJson.get("username").textValue();
         String password = secretsJson.get("password").textValue();
         appDataSourceProperties().setUrl("jdbc:mysql://" + host + ":" + port + "/" + dbname
-            + "?useSSL=false");
+            + "?allowPublicKeyRetrieval=true&useSSL=false");
         appDataSourceProperties().setUsername(username);
         appDataSourceProperties().setPassword(password);
 

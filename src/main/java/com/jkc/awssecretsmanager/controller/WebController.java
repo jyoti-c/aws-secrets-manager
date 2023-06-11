@@ -39,7 +39,7 @@ public class WebController {
 
     // handler method to handle user registration form request
     @GetMapping("/register")
-    public String showRegistrationForm(Model model) {
+    public String showRegistrationForm2(Model model) {
         // create model object to store form data
         UserDto user = new UserDto();
         model.addAttribute("user", user);
@@ -74,4 +74,53 @@ public class WebController {
             return "redirect:/login?error";
         }
     }
+
+    @GetMapping("/register2")
+    public String showRegistrationForm(Model model) {
+        // create model object to store form data
+        UserDto user = new UserDto();
+        model.addAttribute("user", user);
+        return "register2";
+    }
+
+    // handler method to handle user registration form submit request
+    @PostMapping("/register2/save")
+    public String registration(@Valid @ModelAttribute("user") UserDto userDto,
+        BindingResult result,
+        Model model) {
+        User existingUser = userService.findByUsername(userDto.getUserName());
+
+        if (existingUser != null && existingUser.getUsername() != null
+            && !existingUser.getUsername().isEmpty()) {
+            result.rejectValue("userName", null,
+                "There is already an account registered with the same username");
+        }
+
+        if (result.hasErrors()) {
+            model.addAttribute("userName", userDto);
+            return "redirect:/register2?failure";
+        }
+
+        userService.saveUser(userDto);
+        return "redirect:/register2?success";
+    }
+
+    // handler method to handle login request
+    @GetMapping("/login2")
+    public String login2() {
+        return "login2";
+    }
+
+    @PostMapping("/login2")
+    public String validateLogin2(@Valid @ModelAttribute("user") UserDto userDto) {
+        User existingUser = userService.findByUsername(userDto.getUserName());
+        if (existingUser != null && existingUser.getUsername() != null
+            && !existingUser.getUsername().isEmpty()) {
+            if (existingUser.getPassword().equals(userDto.getPassword())) {
+                return "redirect:/login2?success";
+            }
+        }
+        return "redirect:/login2?error";
+    }
+
 }
